@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components';
 
 const sizes = {
   small: css`
@@ -30,12 +30,12 @@ const variations = {
     }
   `,
   secondary: css`
-    color: var(--color-grey-600);
-    background: var(--color-grey-0);
-    border: 1px solid var(--color-grey-200);
+    color: var(--color-gray-600);
+    background: var(--color-gray-0);
+    border: 1px solid var(--color-gray-200);
 
     &:hover {
-      background-color: var(--color-grey-50);
+      background-color: var(--color-gray-50);
     }
   `,
   danger: css`
@@ -47,3 +47,24 @@ const variations = {
     }
   `,
 };
+
+interface ButtonProps {
+  size: 'small' | 'medium' | 'large';
+  variation: 'primary' | 'secondary' | 'danger';
+}
+
+const Button = styled.button<ButtonProps>`
+  border: none;
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-sm);
+
+  ${(props) => sizes[props.size]}
+  ${(props) => variations[props.variation]}
+`;
+
+Button.defaultProps = {
+  variation: 'primary',
+  size: 'medium',
+};
+
+export default Button;
