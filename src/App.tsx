@@ -11,6 +11,7 @@ import GlobalStyles from './styles/GlobalStyles.js';
 import AppLayout from './ui/AppLayout.js';
 
 export default function App() {
+  console.log(import.meta.env.VITE_SUPABASE_KEY);
   return (
     <>
       <GlobalStyles />
