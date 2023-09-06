@@ -9,11 +9,20 @@ import Login from './pages/Login';
 import PageNotFound from './pages/PageNotFound';
 import GlobalStyles from './styles/GlobalStyles.js';
 import AppLayout from './ui/AppLayout.js';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+    },
+  },
+});
 
 export default function App() {
-  console.log(import.meta.env.VITE_SUPABASE_KEY);
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <GlobalStyles />
       <div>
         <BrowserRouter>
@@ -32,6 +41,6 @@ export default function App() {
           </Routes>
         </BrowserRouter>
       </div>
-    </>
+    </QueryClientProvider>
   );
 }
