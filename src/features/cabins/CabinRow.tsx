@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { formatCurrency } from '../../utils/helpers';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteCabin } from '../../services/apiCabins';
+import { toast } from 'react-hot-toast';
 
 type CustomError = {
   message: string;
@@ -74,16 +75,16 @@ export default function CabinRow({ cabin }: CabinRowProps) {
   const { isLoading: isDeleting, mutate } = useMutation({
     mutationFn: deleteCabin,
     onSuccess: () => {
-      alert('Cabin successfully deleted.');
+      toast.success('Cabin successfully deleted.');
       queryClient.invalidateQueries({
         queryKey: ['cabins'],
       });
     },
     onError: (err: unknown) => {
       if ((err as CustomError).message) {
-        alert((err as CustomError).message);
+        toast.error((err as CustomError).message);
       } else {
-        alert('An error occurred.');
+        toast.error('An error occurred.');
       }
     },
   });
