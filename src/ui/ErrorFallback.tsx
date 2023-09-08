@@ -1,8 +1,8 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const StyledErrorFallback = styled.main`
   height: 100vh;
-  background-color: var(--color-grey-50);
+  background-color: var(--color-gray-50);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11,8 +11,8 @@ const StyledErrorFallback = styled.main`
 
 const Box = styled.div`
   /* Box */
-  background-color: var(--color-grey-0);
-  border: 1px solid var(--color-grey-100);
+  background-color: var(--color-gray-0);
+  border: 1px solid var(--color-gray-100);
   border-radius: var(--border-radius-md);
 
   padding: 4.8rem;
@@ -24,8 +24,8 @@ const Box = styled.div`
   }
 
   & p {
-    font-family: "Sono";
+    font-family: 'Sono';
     margin-bottom: 3.2rem;
-    color: var(--color-grey-500);
+    color: var(--color-gray-500);
   }
 `;
