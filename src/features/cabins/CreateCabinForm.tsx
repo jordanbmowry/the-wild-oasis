@@ -1,5 +1,3 @@
-import styled from 'styled-components';
-
 import Input from '../../ui/Input';
 import Form from '../../ui/Form';
 import Button from '../../ui/Button';
@@ -34,7 +32,8 @@ function CreateCabinForm() {
   });
 
   const onSubmit = (data: NewCabin) => {
-    mutate(data);
+    //@ts-ignore
+    mutate({ ...data, image: data.image[0] });
   };
 
   const onError = (errors: { [key: string]: any }) => {
@@ -92,11 +91,14 @@ function CreateCabinForm() {
           defaultValue={0}
           {...register('discount', {
             required: 'This field is required',
-            validate: (value) => {
-              return (
-                value > getValues().regularPrice ||
-                'Discount should be less than regular price'
-              );
+            validate: {
+              isLessThanRegularPrice: (value) => {
+                const regularPrice = getValues('regularPrice');
+                if (Number(value) >= Number(regularPrice)) {
+                  return 'Discount should be less than regular price';
+                }
+                return true;
+              },
             },
           })}
         />
@@ -117,7 +119,15 @@ function CreateCabinForm() {
       </FormRow>
 
       <FormRow label='Cabin photo'>
-        <FileInput disabled={isCreating} id='image' accept='image/*' />
+        <FileInput
+          disabled={isCreating}
+          id='image'
+          type='file'
+          accept='image/*'
+          {...register('image', {
+            required: 'This field is required',
+          })}
+        />
       </FormRow>
 
       <FormRow>
