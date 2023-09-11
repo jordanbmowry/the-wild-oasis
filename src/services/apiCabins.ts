@@ -22,27 +22,45 @@ export async function deleteCabin(id: number) {
 export interface NewCabin {
   description: string;
   discount: string;
-  maxCapacity: string;
+  max_capacity: string;
   name: string;
-  regularPrice: string;
-  image: File | Blob;
+  regular_price: string;
+  image: FileList;
 }
 
-export async function createCabin(newCabin: NewCabin) {
-  const imageName = `${Math.random()}-${newCabin.image?.name}`.replaceAll(
+export async function createEditCabin(newCabin: NewCabin, id: number) {
+  console.log('newCabin', newCabin);
+  const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
+
+  const imageName = `${Math.random()}-${newCabin.image.name}`.replaceAll(
     '/',
     ''
   );
-  const imagePath = `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`;
-  const { maxCapacity, regularPrice, discount, ...rest } = newCabin;
 
-  const parsedMaxCapacity = parseInt(maxCapacity, 10);
-  const parsedRegularPrice = parseFloat(regularPrice);
+  let query = supabase.from('cabins');
+
+  const imagePath = hasImagePath
+    ? newCabin.image
+    : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`;
+
+  const { max_capacity, regular_price, discount, ...rest } = newCabin;
+
+  console.log(newCabin);
+
+  const parsedMaxCapacity = parseInt(max_capacity, 10);
+  const parsedRegularPrice = parseFloat(regular_price);
   const parsedDiscount = parseFloat(discount);
 
-  const { data, error } = await supabase
-    .from('cabins')
-    .insert([
+  if (!id) {
+    console.log('!id if block');
+    console.log({
+      ...rest,
+      max_capacity: parsedMaxCapacity,
+      regular_price: parsedRegularPrice,
+      discount: parsedDiscount,
+      image: imagePath,
+    });
+    query = query.insert([
       {
         ...rest,
         max_capacity: parsedMaxCapacity,
@@ -50,22 +68,44 @@ export async function createCabin(newCabin: NewCabin) {
         discount: parsedDiscount,
         image: imagePath,
       },
-    ])
-    .select();
+    ]);
+  }
+
+  if (id) {
+    console.log('id if block');
+    console.log({
+      ...rest,
+      max_capacity: parsedMaxCapacity,
+      regular_price: parsedRegularPrice,
+      discount: parsedDiscount,
+      image: imagePath,
+    });
+    query = query
+      .update({
+        ...rest,
+        max_capacity: parsedMaxCapacity,
+        regular_price: parsedRegularPrice,
+        discount: parsedDiscount,
+        image: imagePath,
+      })
+      .eq('id', id);
+  }
+
+  const { data, error } = await query.select().single();
 
   if (error) {
+    console.error(error);
     throw new Error('Cabin could not be created');
   }
 
-  console.log(imageName, newCabin.image);
+  if (hasImagePath) return data;
 
   const { error: storageError } = await supabase.storage
     .from('cabin-images')
     .upload(imageName, newCabin.image);
 
   if (storageError) {
-    const { id } = data[0];
-    await supabase.from('cabins').delete().eq('id', id);
+    await supabase.from('cabins').delete().eq('id', data.id);
     console.error(storageError);
     throw new Error(
       'Cabin image could not be uploaded and the cabin was not created'
