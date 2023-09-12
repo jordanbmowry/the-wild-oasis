@@ -36,36 +36,25 @@ function CreateCabinForm({ cabinToEdit = {} }) {
   const { isEditing, editCabin } = useEditCabin();
   const isWorking = isCreating || isEditing;
 
-  const {
-    id: editId,
-    max_capacity: maxCapacity,
-    regular_price: regularPrice,
-    ...editValues
-  } = cabinToEdit;
+  const { id: editId, ...editValues } = cabinToEdit;
   console.log('cabinToEdit in CreateCabinForm', cabinToEdit);
 
   const isEditSession = Boolean(editId);
 
   const { register, handleSubmit, reset, getValues, formState } =
     useForm<NewCabin>({
-      defaultValues: isEditSession
-        ? { ...editValues, maxCapacity, regularPrice }
-        : {},
+      defaultValues: isEditSession ? { ...editValues } : {},
     });
   const { errors } = formState;
 
   function onSubmit(data) {
-    const { maxCapacity, regularPrice, ...rest } = data;
-
     const image = typeof data.image === 'string' ? data.image : data.image[0];
 
     if (isEditSession) {
       editCabin(
         {
           newCabinData: {
-            ...rest,
-            max_capacity: maxCapacity,
-            regular_price: regularPrice,
+            ...data,
             image,
           },
           id: editId,
@@ -79,9 +68,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     } else {
       createCabin(
         {
-          ...rest,
-          max_capacity: maxCapacity,
-          regular_price: regularPrice,
+          ...data,
           image,
         },
         {
@@ -110,12 +97,12 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         />
       </FormRow>
 
-      <FormRow error={errors?.maxCapacity?.message} label='Maximum capacity'>
+      <FormRow error={errors?.max_capacity?.message} label='Maximum capacity'>
         <Input
           disabled={isWorking}
           type='number'
           id='maxCapacity'
-          {...register('maxCapacity', {
+          {...register('max_capacity', {
             required: 'This field is required',
             min: {
               value: 1,
@@ -125,12 +112,12 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         />
       </FormRow>
 
-      <FormRow error={errors?.regularPrice?.message} label='Regular price'>
+      <FormRow error={errors?.regular_price?.message} label='Regular price'>
         <Input
           disabled={isWorking}
           type='number'
-          id='regularPrice'
-          {...register('regularPrice', {
+          id='regular_price'
+          {...register('regular_price', {
             required: 'This field is required',
             min: {
               value: 1,
@@ -150,7 +137,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
             required: 'This field is required',
             validate: {
               isLessThanRegularPrice: (value) => {
-                const regularPrice = getValues('regularPrice');
+                const regularPrice = getValues('regular_price');
                 if (Number(value) >= Number(regularPrice)) {
                   return 'Discount should be less than regular price';
                 }

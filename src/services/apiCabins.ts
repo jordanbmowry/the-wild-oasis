@@ -21,11 +21,11 @@ export async function deleteCabin(id: number) {
 }
 export interface NewCabin {
   description: string;
-  discount: string;
-  max_capacity: string;
+  discount: number;
+  max_capacity: number;
   name: string;
-  regular_price: string;
-  image: FileList;
+  regular_price: number;
+  image: FileList | string;
 }
 
 export async function createEditCabin(newCabin: NewCabin, id: number) {
@@ -43,49 +43,19 @@ export async function createEditCabin(newCabin: NewCabin, id: number) {
     ? newCabin.image
     : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`;
 
-  const { max_capacity, regular_price, discount, ...rest } = newCabin;
-
-  console.log(newCabin);
-
-  const parsedMaxCapacity = parseInt(max_capacity, 10);
-  const parsedRegularPrice = parseFloat(regular_price);
-  const parsedDiscount = parseFloat(discount);
-
   if (!id) {
-    console.log('!id if block');
-    console.log({
-      ...rest,
-      max_capacity: parsedMaxCapacity,
-      regular_price: parsedRegularPrice,
-      discount: parsedDiscount,
-      image: imagePath,
-    });
     query = query.insert([
       {
-        ...rest,
-        max_capacity: parsedMaxCapacity,
-        regular_price: parsedRegularPrice,
-        discount: parsedDiscount,
+        ...newCabin,
         image: imagePath,
       },
     ]);
   }
 
   if (id) {
-    console.log('id if block');
-    console.log({
-      ...rest,
-      max_capacity: parsedMaxCapacity,
-      regular_price: parsedRegularPrice,
-      discount: parsedDiscount,
-      image: imagePath,
-    });
     query = query
       .update({
-        ...rest,
-        max_capacity: parsedMaxCapacity,
-        regular_price: parsedRegularPrice,
-        discount: parsedDiscount,
+        ...newCabin,
         image: imagePath,
       })
       .eq('id', id);
