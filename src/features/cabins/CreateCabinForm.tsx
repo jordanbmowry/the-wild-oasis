@@ -29,9 +29,13 @@ interface CreateCabinFormProps {
     name: string;
     regular_price: number;
   };
+  onCloseModal?: () => void;
 }
 
-function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
+function CreateCabinForm({
+  cabinToEdit = {},
+  onCloseModal,
+}: CreateCabinFormProps) {
   const { isCreating, createCabin } = useCreateCabin();
   const { isEditing, editCabin } = useEditCabin();
   const isWorking = isCreating || isEditing;
